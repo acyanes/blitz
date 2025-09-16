@@ -24,10 +24,10 @@ fn op_remove_file(#[string] path: String) -> Result<(), AnyError> {
 }
 
 #[op2(async)]
-async fn op_fetch(#[string] url: String) -> Result<(), AnyError> {
-    // TODO - implement using reqwest crate
-    println!("{:?}", url);
-    Ok(())
+#[string]
+async fn op_fetch(#[string] url: String) -> Result<String, AnyError> {
+    let body = reqwest::get(url).await?.text().await?;
+    Ok(body)
 }
 
 extension!(
@@ -58,11 +58,19 @@ async fn run_js(file_path: &str) -> Result<(), AnyError> {
 }
 
 fn main() {
+    let args: Vec<String> = std::env::args().collect();
+    if args.is_empty() {
+        eprintln!("Usage: runjs <file>");
+        std::process::exit(1);
+    }
+
+    let file_path = &args[1];
     let runtime = tokio::runtime::Builder::new_current_thread()
         .enable_all()
         .build()
         .unwrap();
-    if let Err(error) = runtime.block_on(run_js("./example.js")) {
-        eprintln!("error: {}", error);
+
+    if let Err(error) = runtime.block_on(run_js(file_path)) {
+        eprintln!("error: {error}");
     }
 }
