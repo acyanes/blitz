@@ -38,8 +38,8 @@ extension!(
     op_remove_file,
         op_fetch,
   ],
-   esm_entry_point = "ext:runjs/runtime.js",
-   esm = [dir "src", "runtime.js"],
+   esm_entry_point = "ext:runjs/js/main.js",
+   esm = [dir "src", "js/main.js", "js/fs.js", "js/fetch.js", "js/console.js"],
 );
 
 async fn run_js(file_path: &str) -> Result<(), AnyError> {
